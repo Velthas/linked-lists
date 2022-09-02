@@ -75,8 +75,8 @@ function LinkedList(headValue) {
 
 // Factory for linked list node
 function CreateNode() {
-  // Make it point to our method object literal for inheritance
-  const node = Object.create(nodeMethods);
+  // Our nodes actually don't need inheritance
+  const node = Object.create({});
 
   // Initial values null per specifications
   node.value = null;

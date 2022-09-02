@@ -60,6 +60,86 @@ const linkedListMethods = {
     }
     return returnAt(index, this); // Initiate recursion
   },
+  pop() {
+    const size = this.size(); // We can use our method to get the size
+    let i = 1; // not strictly necessary but if it works don't break it, no?
+    let currentNode = this;
+    while (i < size - 1) {
+      currentNode = currentNode.next; // With this iterative approach
+      i++; // we stop at the penultimate node, then cut off reference to the next
+    }
+    currentNode.next = null; // Stray object will be garbage collected
+  },
+  contains(value) {
+    function findValue(node) {
+      if (node.value === value) return true; // If the value is found, return true
+      if (node.next === null) { return false; } // If we reach end of list, we can assume false
+      return findValue(node.next); // Recursively step through until false or true is returned.
+    }
+    return findValue(this); // Pass a reference to the head
+  },
+  find(value) {
+    function returnIndex(node) {
+      if (node.value === value) return 0; // When you hit the base case return
+      if (node.next === null) return null; // When no hit is found, return null per specification
+      return 1 + returnIndex(node.next); // Depending on how many steps this takes we will get index
+    }
+    return returnIndex(this);
+  },
+  toString() {
+    let headString = `( ${this.value} )`; // The head is the only step not preceded by an arrow
+    function stringifyLinkedList(node) {
+      if (node.next === null) { // When the next node is null, append the value and '-> Null'
+        headString = `${headString} -> ( ${node.value} )` + ' -> Null';
+        return headString; // Then return the string
+      }
+
+      headString = `${headString} -> ( ${node.value} )`; // Otherwise just append the value
+      return stringifyLinkedList(node.next); // then call again until the final string bubbles up
+    }
+    return stringifyLinkedList(this.next);
+  },
+  insertAt(value, index) {
+    if (index === 0) this.prepend(value); // Use existing method for head replacement
+    // Prepare variables to keep track of nodes as we move through the loop
+    let currentNode = this;
+    let previousNode = null;
+    // Creat ethe new node and assign it the new value
+    const newNode = CreateNode();
+    newNode.value = value;
+    // Iteratively reach the index for insertion
+    for (let i = 1; i <= index; i++) {
+      // All while keeping track of nodes as we move through
+      previousNode = currentNode;
+      currentNode = currentNode.next;
+    }
+    // Once loop has exited we have the node
+    // that precedes the one to insert, and
+    // the one that should follow it.
+    previousNode.next = newNode;
+    newNode.next = currentNode;
+    // Return the list
+    return this;
+  },
+  removeAt(index) {
+    // Create variables to keep track of nodes
+    let currentNode = this;
+    let previousNode = null;
+    let nextNode = this.next; // This time we also need to know which node follows the current one
+    // We iterate until the proper index is reached
+    for (let i = 1; i <= index; i++) {
+      previousNode = currentNode;
+      currentNode = currentNode.next;
+      nextNode = currentNode.next;
+    }
+    // We simply cut off the 'current node'
+    // by liking the one preceding it to the one following it
+    // Once that object is not referred by anything else in code,
+    // it automatically gets collected by JS garbage collection.
+    previousNode.next = nextNode;
+    // Return the list once done
+    return this;
+  },
 };
 
 // Factory for linked list
